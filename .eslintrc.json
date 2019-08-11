@@ -1,0 +1,27 @@
+{
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "globals": {
+    "__VERSION__": true,
+    "__COMMITHASH__": true,
+    "__BRANCH__": true,
+    "API_URL": true
+  },
+  "rules": {
+    "react/forbid-prop-types": 0,
+    "react/no-multi-comp": 0,
+    "react/jsx-closing-tag-location": 0,
+    "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
+    "jsx-a11y/anchor-is-valid": [2, {
+      "components": ["Link"],
+      "specialLink": ["to", "hrefLeft", "hrefRight"],
+      "aspects": ["noHref", "invalidHref", "preferButton"]
+    }],
+    "linebreak-style": 0
+  }
+}

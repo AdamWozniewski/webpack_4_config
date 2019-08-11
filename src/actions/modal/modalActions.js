@@ -1,0 +1,1 @@
+export const showModal = visible => dispatch => `sample action, Modal is: ${visible}`;
