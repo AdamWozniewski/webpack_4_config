@@ -9,7 +9,7 @@ const PurifyCSSPlugin = require('purifycss-webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const MiniCSSPlugin = require('mini-css-extract-plugin');
 
-//------------------------------------- Ładowanie plików JS / JSX---------
+// ------------------------------------- Ładowanie plików JS / JSX---------
 exports.loadJS = ({
   test = /\.(js|jsx)$/,
   // test: /\.ts(x?)$/, // @TS
@@ -37,15 +37,13 @@ exports.loadJS = ({
     },
   };
 };
-//------------------------------------- Ładowanie oczyszczania JS / JSX---------
+// ------------------------------------- Ładowanie oczyszczania JS / JSX---------
 exports.UglifyJS = () => {
   return {
-    plugins: [
-      new UglifyJSPlugin(),
-    ],
+    plugins: [new UglifyJSPlugin()],
   };
 };
-//------------------------------------- Ładowanie stylów SASS---------
+// ------------------------------------- Ładowanie stylów SASS---------
 exports.loadSCSS = ({
   extractOptions = {
     filename: 'src/css/[chunkhash].css',
@@ -61,46 +59,46 @@ exports.loadSCSS = ({
           test: /\.scss$/,
           exclude: /node_modules/,
           use:
-            //ExtractTextWebpackPlugin.extract({ dla webpack @3
-            //publicPath: './../',
-            //use:
-              [
-                isDev ? 'style-loader' : {
-                  loader: MiniCSSPlugin.loader,
-                  options: {
-                    publicPath: './../../../',
+            // ExtractTextWebpackPlugin.extract({ dla webpack @3
+            // publicPath: './../',
+            // use:
+            [
+              isDev
+                ? 'style-loader'
+                : {
+                    loader: MiniCSSPlugin.loader,
+                    options: {
+                      publicPath: './../../../',
+                    },
                   },
+              {
+                loader: 'css-loader',
+                options: {
+                  sourceMap: true,
+                  modules: true,
+                  localIdentName: '[name]__[local]--[hash:base64:5]-purify',
                 },
-                {
-                  loader: 'css-loader',
-                  options: {
-                    sourceMap: true,
-                    modules: true,
-                    localIdentName: '[name]__[local]--[hash:base64:5]-purify',
-                  },
+              },
+              {
+                loader: 'postcss-loader',
+                options: {
+                  plugins: () => [new require('autoprefixer')()], // plugins: loader => ...
+                  sourceMap: true,
                 },
-                {
-                  loader: 'postcss-loader',
-                  options: {
-                    plugins: (loader) => [
-                      new require('autoprefixer')(),
-                    ],
-                    sourceMap: true,
-                  },
+              },
+              {
+                loader: 'resolve-url-loader',
+                options: {
+                  sourceMap: true,
                 },
-                {
-                  loader: 'resolve-url-loader',
-                  options: {
-                    sourceMap: true,
-                  },
+              },
+              {
+                loader: 'sass-loader',
+                options: {
+                  sourceMap: true,
                 },
-                {
-                  loader: 'sass-loader',
-                  options: {
-                    sourceMap: true,
-                  },
-                },
-              ],
+              },
+            ],
           // }), Dla Webpack @3
         },
       ],
@@ -111,19 +109,21 @@ exports.loadSCSS = ({
     ],
   };
 };
-//------------------------------------- Ładowanie obrazów---------
+// ------------------------------------- Ładowanie obrazów---------
 exports.loadImages = ({
   fileOptions = {
     name: '[name].[ext]',
-		outputPath: 'src/images/',
+    outputPath: 'src/images/',
   },
   imageOptions,
   isDev = false,
 } = {}) => {
-  const loaders = [{
-    loader: 'file-loader',
-    options: fileOptions,
-  }];
+  const loaders = [
+    {
+      loader: 'file-loader',
+      options: fileOptions,
+    },
+  ];
   if (isDev === false) {
     loaders.push({
       loader: 'image-webpack-loader',
@@ -142,14 +142,14 @@ exports.loadImages = ({
     },
   };
 };
-//------------------------------------- Ładowanie fontów---------
+// ------------------------------------- Ładowanie fontów---------
 exports.loadFonts = ({
- test = /\.(woff|woff2|eot|ttf|otf)$/,
- exclude = /node_modules/,
- options = {
-   limit: 30000,
-   name: 'src/fonts/[name].[ext]',
- },
+  test = /\.(woff|woff2|eot|ttf|otf)$/,
+  exclude = /node_modules/,
+  options = {
+    limit: 30000,
+    name: 'src/fonts/[name].[ext]',
+  },
 } = {}) => {
   return {
     module: {
@@ -166,10 +166,8 @@ exports.loadFonts = ({
     },
   };
 };
-//------------------------------------- Ładowanie szablonów HTML---------
-exports.loadHTML = ({
-  pluginOptions,
-} = {}) => {
+// ------------------------------------- Ładowanie szablonów HTML---------
+exports.loadHTML = ({ pluginOptions } = {}) => {
   return {
     module: {
       rules: [
@@ -187,20 +185,16 @@ exports.loadHTML = ({
         },
       ],
     },
-    plugins: [
-      new HTMLWebpackPlugin(pluginOptions),
-    ],
+    plugins: [new HTMLWebpackPlugin(pluginOptions)],
   };
 };
-//------------------------------------- Ładowanie optymalizacji---------
+// ------------------------------------- Ładowanie optymalizacji---------
 exports.CleanPlugin = ({ paths, options }) => {
   return {
-    plugins: [
-      new CleanPlugin(paths, options),
-    ],
+    plugins: [new CleanPlugin(paths, options)],
   };
 };
-//------------------------------------- Ładowanie oczyszczania CSS---------
+// ------------------------------------- Ładowanie oczyszczania CSS---------
 exports.PurifyCSSPlugin = ({ paths, purifyOptions }) => {
   return {
     plugins: [
@@ -211,7 +205,7 @@ exports.PurifyCSSPlugin = ({ paths, purifyOptions }) => {
     ],
   };
 };
-//------------------------------------- Ładowanie kompresji plików---------
+// ------------------------------------- Ładowanie kompresji plików---------
 exports.CompressionPlugin = () => {
   return {
     plugins: [
@@ -222,9 +216,7 @@ exports.CompressionPlugin = () => {
   };
 };
 
-exports.extractBundle = ({
-  name = 'libs',
-} = {}) => {
+exports.extractBundle = ({ name = 'libs' } = {}) => {
   return {
     // Tylko Webpack @4
     optimization: {
@@ -238,7 +230,7 @@ exports.extractBundle = ({
         },
       },
     },
-    plugins:[
+    plugins: [
       // Dla Webpack @3
       // new webpack.HashedModuleIdsPlugin(),
       // new webpack.optimize.CommonsChunkPlugin({
@@ -250,46 +242,48 @@ exports.extractBundle = ({
     ],
   };
 };
-//------------------------------------- Ładowanie BrowserSync---------
+// ------------------------------------- Ładowanie BrowserSync---------
 exports.browserSync = ({
- host = 'localhost',
- port = 9105,
- proxy = 'http://localhost:9005',
- options = {
-   reload: false,
- },
+  host = 'localhost',
+  port = 9105,
+  proxy = 'http://localhost:9005',
+  options = {
+    reload: false,
+  },
 } = {}) => {
   return {
-		plugins: [
-			new BrowserSyncPlugin({
-				host,
-				port,
-				proxy,
-			}, options),
-		],
-	};
+    plugins: [
+      new BrowserSyncPlugin(
+        {
+          host,
+          port,
+          proxy,
+        },
+        options,
+      ),
+    ],
+  };
 };
-//------------------------------------- Ładowanie Serwera deweloperskiego---------
+// ------------------------------------- Ładowanie Serwera deweloperskiego---------
 exports.devServer = ({
- port = 9005,
- hot = true,
- overlay = true,
- contentBase,
+  port = 9005,
+  hot = true,
+  overlay = true,
+  contentBase,
+  historyApiFallback = true,
 } = {}) => {
   const plugins = [];
-	if (hot) {
-		plugins.push(
-			new webpack.NamedModulesPlugin(),
-			new webpack.HotModuleReplacementPlugin(),
-		);
-	}
-	return {
-		devServer: {
-			port,
-			contentBase,
-			hot,
-			overlay,
-		},
-		plugins,
-	};
+  if (hot) {
+    plugins.push(new webpack.NamedModulesPlugin(), new webpack.HotModuleReplacementPlugin());
+  }
+  return {
+    devServer: {
+      port,
+      contentBase,
+      hot,
+      overlay,
+      historyApiFallback,
+    },
+    plugins,
+  };
 };
