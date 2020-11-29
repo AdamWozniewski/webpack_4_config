@@ -1,25 +1,31 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const glob = require('glob');
 const path = require('path');
-
 const parts = require('./webpack.parts');
-
-// import { PATH_TO_BUILD } from './static';
 const pathToBuild = require('./static').PATH_TO_BUILD;
 
 const config = {
   entry: {
-    app: './src/index.js',
+    app: './src/index.jsx',
     // app: './src/index.tsx', // @TS
-    // libs: ['react', 'react-dom', 'react-css-modules'], // Tylko dla Webpack @3
   },
   output: {
     filename: './src/js/[name].[chunkhash].js',
-    path: pathToBuild,
+    path: path.resolve(pathToBuild),
   },
   devtool: false,
   resolve: {
     extensions: ['.js', '.jsx'],
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
   },
   // externals: {
   //   "react": "React",
@@ -32,7 +38,9 @@ const prod = merge([
   parts.CleanPlugin({
     paths: ['dist'],
     options: {
-      root: path.resolve(__dirname, '../'),
+      // root: path.resolve(__dirname, '../'),
+      verbose: true,
+      dry: false,
     },
   }),
   parts.loadJS(),
@@ -48,6 +56,7 @@ const prod = merge([
   parts.loadFonts(),
   parts.loadHTML({
     pluginOptions: {
+      title: 'Custom template',
       filename: 'index.html',
       template: path.resolve(__dirname, './../src/template/template.html'),
       nimify: {},
@@ -55,10 +64,11 @@ const prod = merge([
   }),
   parts.PurifyCSSPlugin({
     paths: glob.sync(path.join(__dirname, './src/**/*.(js|jsx)'), { nodir: true }),
+    // paths: glob.sync(path.join(__dirname, 'index.html')),
     purifyOptions: {
       whitelist: ['*purify*'],
       minify: true,
-    }
+    },
   }),
   parts.UglifyJS(),
   parts.CompressionPlugin(),

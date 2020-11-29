@@ -1,11 +1,10 @@
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-// const ExtractTextWebpackPlugin = require("extract-text-webpack-plugin"); // Webpack @3
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-// var FileManagerPlugin = require('filemanager-webpack-plugin'); // Webpack @3
-const CleanPlugin = require('clean-webpack-plugin');
-const PurifyCSSPlugin = require('purifycss-webpack');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const PurifyCSSPlugin = require('purgecss-webpack-plugin');
+const Autoprefixer = require('autoprefixer');
 const CompressionPlugin = require('compression-webpack-plugin');
 const MiniCSSPlugin = require('mini-css-extract-plugin');
 
@@ -58,55 +57,49 @@ exports.loadSCSS = ({
         {
           test: /\.scss$/,
           exclude: /node_modules/,
-          use:
-            // ExtractTextWebpackPlugin.extract({ dla webpack @3
-            // publicPath: './../',
-            // use:
-            [
-              isDev
-                ? 'style-loader'
-                : {
-                    loader: MiniCSSPlugin.loader,
-                    options: {
-                      publicPath: './../../../',
-                    },
+          use: [
+            isDev
+              ? 'style-loader'
+              : {
+                  loader: MiniCSSPlugin.loader,
+                  options: {
+                    publicPath: './../../../',
                   },
-              {
-                loader: 'css-loader',
-                options: {
-                  sourceMap: true,
-                  modules: true,
-                  localIdentName: '[name]__[local]--[hash:base64:5]-purify',
                 },
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                modules: true,
+                localIdentName: '[name]__[local]--[hash:base64:5]-purify',
               },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  plugins: () => [new require('autoprefixer')()], // plugins: loader => ...
-                  sourceMap: true,
-                },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                // plugins: () => [new require('autoprefixer')()], // plugins: loader => ...
+                // plugins: [new require('autoprefixer')()], // plugins: loader => ...
+                plugins: [new Autoprefixer()], // plugins: loader => ...
+                sourceMap: true,
               },
-              {
-                loader: 'resolve-url-loader',
-                options: {
-                  sourceMap: true,
-                },
+            },
+            {
+              loader: 'resolve-url-loader',
+              options: {
+                sourceMap: true,
               },
-              {
-                loader: 'sass-loader',
-                options: {
-                  sourceMap: true,
-                },
+            },
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true,
               },
-            ],
-          // }), Dla Webpack @3
+            },
+          ],
         },
       ],
     },
-    plugins: [
-      // new ExtractTextWebpackPlugin(extractOptions), // Dla Webpack @3
-      new MiniCSSPlugin(extractOptions),
-    ],
+    plugins: [new MiniCSSPlugin(extractOptions)],
   };
 };
 // ------------------------------------- Ładowanie obrazów---------
@@ -191,7 +184,12 @@ exports.loadHTML = ({ pluginOptions } = {}) => {
 // ------------------------------------- Ładowanie optymalizacji---------
 exports.CleanPlugin = ({ paths, options }) => {
   return {
-    plugins: [new CleanPlugin(paths, options)],
+    plugins: [
+      new CleanWebpackPlugin({
+        paths,
+        ...options,
+      }),
+    ],
   };
 };
 // ------------------------------------- Ładowanie oczyszczania CSS---------
@@ -218,7 +216,7 @@ exports.CompressionPlugin = () => {
 
 exports.extractBundle = ({ name = 'libs' } = {}) => {
   return {
-    // Tylko Webpack @4
+    // Tylko Webpack @4/@5
     optimization: {
       splitChunks: {
         cacheGroups: {
@@ -230,16 +228,7 @@ exports.extractBundle = ({ name = 'libs' } = {}) => {
         },
       },
     },
-    plugins: [
-      // Dla Webpack @3
-      // new webpack.HashedModuleIdsPlugin(),
-      // new webpack.optimize.CommonsChunkPlugin({
-      //   name,
-      // }),
-      // new webpack.optimize.CommonsChunkPlugin({
-      //   name: '_',
-      // }),
-    ],
+    plugins: [],
   };
 };
 // ------------------------------------- Ładowanie BrowserSync---------
@@ -274,7 +263,10 @@ exports.devServer = ({
 } = {}) => {
   const plugins = [];
   if (hot) {
-    plugins.push(new webpack.NamedModulesPlugin(), new webpack.HotModuleReplacementPlugin());
+    plugins.push(
+      // new webpack.NamedModulesPlugin(), @ w4
+      new webpack.HotModuleReplacementPlugin(),
+    );
   }
   return {
     devServer: {

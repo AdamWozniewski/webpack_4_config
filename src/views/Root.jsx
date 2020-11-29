@@ -4,7 +4,6 @@ import routes from "./../routes/index";
 import ModalRootComponent from './../components/containers/modal/Modal';
 import RegistrationForm from './../components/forms/RegistrationForm';
 import Timer from "./../components/timer/Timer";
-
 import history from './../store/history';
 
 const {
@@ -13,13 +12,13 @@ const {
 } = routes;
 
 const Root = () => (
-  <BrowserRouter history={history}>
+  <BrowserRouter history={ history }>
     <div>
       <Switch>
-        <Route exact path={home} render={() => <Redirect to={login} />} />
-        <Route exact path={login} component={ModalRootComponent} />
-        <Route exact path="/path1" component={RegistrationForm} />
-        <Route exact path="/path2" component={Timer} />
+        <Route exact path={home} render={() => <Redirect to={ login } />} />
+        <Route exact path={login} component={ ModalRootComponent } />
+        <Route exact path="/path1" component={ RegistrationForm } />
+        <Route exact path="/path2" component={ Timer } />
       </Switch>
       <hr/>
 

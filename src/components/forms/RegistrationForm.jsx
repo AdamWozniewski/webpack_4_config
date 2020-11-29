@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
-
 import messages from './../../static/messages.json';
-
 const { forms } = messages;
 
 class RegistrationForm extends Component {

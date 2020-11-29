@@ -6,7 +6,7 @@ import Root from './views/Root';
 import store from './store/store';
 import './styles/style.scss';
 
-const render = Comp => {
+const render = (Comp = {}) => {
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
